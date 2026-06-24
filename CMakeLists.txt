@@ -5,6 +5,7 @@ file(GLOB_RECURSE COMMON_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/lib/
 add_library(common STATIC ${COMMON_SRC})
 target_include_directories(common PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 target_precompile_headers(common PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/pch.h")
+target_link_libraries(common PUBLIC m)
 
 file(GLOB PROBLEM_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
 foreach(PROBLEM_SRC_FILE ${PROBLEM_SRC})
