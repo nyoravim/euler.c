@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+function build() {
+    CMAKE_OPTS="-DCMAKE_C_COMPILER=clang -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    if ! cmake . -B build $CMAKE_OPTS ; then
+        echo "failed to configure build system" >&2
+        exit 1
+    fi
+
+    CMAKE_BUILD_OPTS="-j8"
+
+    TARGET="$1"
+    if [[ -n "$TARGET" ]]; then
+        CMAKE_BUILD_OPTS="$CMAKE_BUILD_OPTS -t $TARGET"
+    fi
+
+    if ! cmake --build build $CMAKE_BUILD_OPTS ; then
+        echo "failed to build" >&2
+        exit 1
+    fi
+}
+
+if ! command -v cmake >/dev/null ; then
+    echo "cmake not found" >&2
+    exit 1
+fi
+
+NUM=$1
+if [[ -z "$NUM" ]]; then
+    echo "no problem number provided" >&2
+    exit 1
+fi
+
+TARGET="problem$NUM"
+if ! build $TARGET >/dev/null ; then
+    echo "failed to build target" >&2
+    exit 1
+fi
+
+INPUT="$(pwd)/input/$NUM.txt"
+if [[ -f "$INPUT" ]]; then
+    echo "reading input file $INPUT"
+else
+    echo "no input exists; passing no input"
+    INPUT=/dev/null
+fi
+
+"build/$TARGET" <$INPUT
+exit $?
